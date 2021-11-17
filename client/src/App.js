@@ -1,13 +1,13 @@
-import './App.css';
-import Canvas from './views/Canvas';
-import Tools from './views/Tools';
+import React from 'react'
+import { Canvas } from './Canvas'
+import { ClearCanvasButton } from './ClearCanvasButton';
 
 function App() {
   return (
-    <div className="App">
+    <>
       <Canvas/>
-      <Tools/>
-    </div>
+      <ClearCanvasButton/>
+    </>
   );
 }
 
