@@ -1,6 +1,7 @@
 import Clear from "../components/Clear";
 import Paint from "../components/Paint";
 import Undo from "../components/Undo";
+import '../components/Tools.modules.css';
 
 const Tools = (props) => {
     return (

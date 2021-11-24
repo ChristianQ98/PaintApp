@@ -29,3 +29,14 @@
     align-self: center;
     margin: 15px;
 }
+
+.color-field,
+.color-picker,
+.pen-width {
+    text-align: center;
+}
+
+.paint-tools {
+    text-align: center;
+    width: 100%;
+}
