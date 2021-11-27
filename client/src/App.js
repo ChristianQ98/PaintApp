@@ -1,21 +1,17 @@
 import { useEffect, useState, useRef } from 'react';
 import Paint from './components/Paint';
-import Undo from './components/Undo';
 import './App.css';
-import CanvasDraw from 'react-canvas-draw';
 
 function App() {
   const canvasRef = useRef(null);
   const contextRef = useRef(null);
   const [ isDrawing, setIsDrawing ] = useState(false);
   const [ drawColor, setDrawColor ] = useState();
-  const [ canvasDrawing, setCanvasDrawing ] = useState([]);
   const [ penWidth, setPenWidth ] = useState(5);
-  
-  let drawArr = [];
-  let index = -1;
-  // let penWidth = 5;
+
   let canvasHistory = [];
+  let pathsry = [];
+  let index = -1;
 
   // Creates the canvas
   useEffect(() => {
@@ -31,17 +27,23 @@ function App() {
       context.strokeStyle = localStorage.getItem('penColor');
       context.lineWidth = penWidth;
       contextRef.current = context;
-  }, [ localStorage.getItem('penColor'), penWidth ]);
+  }, []);
 
-    // useEffect(() => {
-    //   setDrawColor(localStorage.getItem('penColor'));
-    // }, [ ])
-
-  const startDrawing = ({ nativeEvent }) => {
-      const { offsetX, offsetY } = nativeEvent;
-      contextRef.current.beginPath();
-      contextRef.current.moveTo(offsetX, offsetY);
-      setIsDrawing(true);
+  // const startDrawing = ({ nativeEvent }) => {
+  //     const { offsetX, offsetY } = nativeEvent;
+  //     contextRef.current.beginPath();
+  //     contextRef.current.moveTo(offsetX, offsetY);
+  //     setIsDrawing(true);
+  // }
+  const startDrawing = (e) => {
+    const canvas = canvasRef.current;
+    const context = canvas.getContext("2d");
+    setIsDrawing(true);
+    context.beginPath();
+    context.moveTo(e.clientX - canvas.offsetLeft,
+      e.clientY - canvas.offsetTop);
+    e.preventDefault();
+    
   }
 
   const stopDrawing = (e) => {
@@ -50,28 +52,30 @@ function App() {
       if(isDrawing) {
         context.stroke();
         context.closePath();
-        // setCanvasDrawing(localStorage.setItem('canvas-drawing', canvas.toDataURL()));
-        canvasHistory.push(canvas.toDataURL());
-        console.log(canvasHistory);
-        console.log(canvasHistory.length);
         setIsDrawing(false);
       }
       e.preventDefault();
-      // if(e.type !== 'mouseout') {
-      //   // drawArr.push(context.getImageData(0, 0, canvas.width, canvas.height));
-      //   // index += 1;
-      //   // console.log(drawArr);
-      //   // canvasHistory.push(context.getImageData(0, 0, canvas.width, canvas.height));
-      // }
+      if(e.type != 'mouseon') {
+        canvasHistory.push(context.getImageData(0 , 0, canvas.width, canvas.height));
+        index += 1;
+      }
+      console.log(canvasHistory);
+      console.log(index);
   }
 
-  const draw = ({ nativeEvent }) => {
-      if(!isDrawing) {
-      return;
-      }
-      const { offsetX, offsetY } = nativeEvent;
-      contextRef.current.lineTo(offsetX, offsetY);
-      contextRef.current.stroke();
+  const draw = (e) => {
+    const canvas = canvasRef.current;
+    const context = canvas.getContext("2d");
+    if(isDrawing) {
+      context.lineTo(e.clientX - canvas.offsetLeft,
+        e.clientY - canvas.offsetTop);
+      context.strokeStyle = localStorage.getItem('penColor');
+      context.lineWidth = penWidth;
+      context.lineCap = "round";
+      context.lineJoin = "round";
+      context.stroke();
+    }
+    e.preventDefault();
   }
 
   let default_background_color = "white";
@@ -81,20 +85,42 @@ function App() {
     context.fillStyle = default_background_color;
     context.clearRect(0 , 0, canvas.width, canvas.height);
     context.fillRect(0 , 0, canvas.width, canvas.height);
+
+    // Restore the canvas history to its default, blank state
+    canvasHistory = [];
+    index = -1;
   } 
 
+  function drawPaths(){
+    const canvas = canvasRef.current;
+    const context = canvas.getContext("2d");
+    // delete everything
+    context.clearRect(0,0,canvas.width,canvas.height);
+    // draw all the paths in the paths array
+    pathsry.forEach(path=>{
+      context.beginPath();
+      context.moveTo(path[0].x,path[0].y);  
+    for(let i = 1; i < path.length; i++){
+      context.lineTo(path[i].x,path[i].y); 
+    }
+    context.stroke();
+    })
+  }  
+
   const undo = () => {
+    // const canvas = canvasRef.current;
+    // const context = canvas.getContext("2d");
     // if(index <= 0) {
     //   clearCanvas();
     // } else {
-    //   const canvas = canvasRef.current;
-    //   const context = canvas.getContext("2d");
     //   index -= 1;
-    //   drawArr.pop();
-    //   context.putImageData(drawArr[index], 0, 0);
+    //   canvasHistory.pop();
+    //   context.putImageData(canvasHistory[index], 0, 0);
     // }
-    const canvas = canvasRef.current;
-    const context = canvas.getContext("2d");
+    // remove the last path from the paths array
+  pathsry.splice(-1,1);
+  // draw all the paths in the paths array
+  drawPaths();
   }
   
   const changeColor = (e) => {
@@ -120,10 +146,14 @@ function App() {
       <canvas
       id = 'canvas'
         onMouseDown = { startDrawing }
-        onMouseUp = { stopDrawing }
+        onTouchStart = { startDrawing }
         onMouseMove = { draw }
+        onTouchMove = { draw }
+        onMouseUp = { stopDrawing }
+        onMouseOut = { stopDrawing }
+        onTouchEnd = { stopDrawing }
         ref = { canvasRef }
-        style = {{ border: '3px solid black', width: '20px', height: '20px', textAlign: 'center', paddingLeft: 0, paddingRight: 0, marginTop: '2%', marginLeft: 'auto', marginRight: 'auto', display: 'block', backgroundColor: 'white' }}
+        style = {{ border: '3px solid black', width: '20px', height: '20px', textAlign: 'center', paddingLeft: 0, paddingRight: 0, marginTop: '2%', marginLeft: 'auto', marginRight: 'auto', display: 'block', backgroundColor: 'white', cursor: 'crosshair' }}
       />
 
       <div className="paint-tools" style = {{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly', width: '50%', margin: 'auto', padding: '5px', marginTop: '1%' }}>
@@ -132,10 +162,10 @@ function App() {
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-evenly', margin: 'auto', width: '80%', marginTop: '2%' }}>
           <div>
-            <button id="undo" onClick={ undo } className="undo" style = {{ width: '8em', height: '3em', fontFamily: 'DejaVu Sans Mono, monospace', fontSize: '16px' }}>Undo</button>
+            <button id="undo" onClick={ () => undo() } className="undo" style = {{ width: '8em', height: '3em', fontFamily: 'DejaVu Sans Mono, monospace', fontSize: '16px' }}>Undo</button>
           </div>
           <div>
-            <button onClick={ clearCanvas } className="clear" style = {{ width: '8em', height: '3em', fontFamily: 'DejaVu Sans Mono, monospace', fontSize: '16px' }}>Clear</button>
+            <button onClick={ () => clearCanvas() } className="clear" style = {{ width: '8em', height: '3em', fontFamily: 'DejaVu Sans Mono, monospace', fontSize: '16px' }}>Clear</button>
           </div>
           <div>
             <button onClick={ download } className="download" style = {{ width: '8em', height: '3em', fontFamily: 'DejaVu Sans Mono, monospace', fontSize: '16px' }}>Download</button>
