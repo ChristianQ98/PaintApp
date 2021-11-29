@@ -28,6 +28,7 @@
 .pen-width {
     align-self: center;
     margin: 15px;
+    margin-top: 3%;
 }
 
 .color-field,
@@ -39,4 +40,8 @@
 .paint-tools {
     text-align: center;
     width: 100%;
+}
+
+#erase {
+    margin-right: 1%;
 }

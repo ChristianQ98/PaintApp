@@ -7,19 +7,15 @@ function App() {
   const contextRef = useRef(null);
   const [ isDrawing, setIsDrawing ] = useState(false);
   const [ drawColor, setDrawColor ] = useState();
-  const [ penWidth, setPenWidth ] = useState(5);
-
-  let canvasHistory = [];
-  let pathsry = [];
-  let index = -1;
+  const [ penWidth, setPenWidth ] = useState(25);
 
   // Creates the canvas
   useEffect(() => {
       const canvas = canvasRef.current;
-      canvas.width = 1350;
-      canvas.height = 1250;
-      canvas.style.width = "675px";
-      canvas.style.height = "625px";
+      canvas.width = 1300;
+      canvas.height = 1200;
+      canvas.style.width = "650px";
+      canvas.style.height = "600px";
       // Allows 2d lines and shapes to be displayed
       const context = canvas.getContext("2d");
       context.scale(2, 2);
@@ -27,14 +23,9 @@ function App() {
       context.strokeStyle = localStorage.getItem('penColor');
       context.lineWidth = penWidth;
       contextRef.current = context;
+      // eslint-disable-next-line
   }, []);
 
-  // const startDrawing = ({ nativeEvent }) => {
-  //     const { offsetX, offsetY } = nativeEvent;
-  //     contextRef.current.beginPath();
-  //     contextRef.current.moveTo(offsetX, offsetY);
-  //     setIsDrawing(true);
-  // }
   const startDrawing = (e) => {
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
@@ -42,8 +33,7 @@ function App() {
     context.beginPath();
     context.moveTo(e.clientX - canvas.offsetLeft,
       e.clientY - canvas.offsetTop);
-    e.preventDefault();
-    
+    e.preventDefault();  
   }
 
   const stopDrawing = (e) => {
@@ -55,12 +45,6 @@ function App() {
         setIsDrawing(false);
       }
       e.preventDefault();
-      if(e.type != 'mouseon') {
-        canvasHistory.push(context.getImageData(0 , 0, canvas.width, canvas.height));
-        index += 1;
-      }
-      console.log(canvasHistory);
-      console.log(index);
   }
 
   const draw = (e) => {
@@ -79,49 +63,14 @@ function App() {
   }
 
   let default_background_color = "white";
+  // Clears the entire canvas by making the background color entirely white
   const clearCanvas = () => {
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
     context.fillStyle = default_background_color;
     context.clearRect(0 , 0, canvas.width, canvas.height);
     context.fillRect(0 , 0, canvas.width, canvas.height);
-
-    // Restore the canvas history to its default, blank state
-    canvasHistory = [];
-    index = -1;
   } 
-
-  function drawPaths(){
-    const canvas = canvasRef.current;
-    const context = canvas.getContext("2d");
-    // delete everything
-    context.clearRect(0,0,canvas.width,canvas.height);
-    // draw all the paths in the paths array
-    pathsry.forEach(path=>{
-      context.beginPath();
-      context.moveTo(path[0].x,path[0].y);  
-    for(let i = 1; i < path.length; i++){
-      context.lineTo(path[i].x,path[i].y); 
-    }
-    context.stroke();
-    })
-  }  
-
-  const undo = () => {
-    // const canvas = canvasRef.current;
-    // const context = canvas.getContext("2d");
-    // if(index <= 0) {
-    //   clearCanvas();
-    // } else {
-    //   index -= 1;
-    //   canvasHistory.pop();
-    //   context.putImageData(canvasHistory[index], 0, 0);
-    // }
-    // remove the last path from the paths array
-  pathsry.splice(-1,1);
-  // draw all the paths in the paths array
-  drawPaths();
-  }
   
   const changeColor = (e) => {
     setDrawColor(e);
@@ -162,7 +111,7 @@ function App() {
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-evenly', margin: 'auto', width: '80%', marginTop: '2%' }}>
           <div>
-            <button id="undo" onClick={ () => undo() } className="undo" style = {{ width: '8em', height: '3em', fontFamily: 'DejaVu Sans Mono, monospace', fontSize: '16px' }}>Undo</button>
+            {/* <button id="undo" onClick={ () => undo() } className="undo" style = {{ width: '8em', height: '3em', fontFamily: 'DejaVu Sans Mono, monospace', fontSize: '16px' }}>Undo</button> */}
           </div>
           <div>
             <button onClick={ () => clearCanvas() } className="clear" style = {{ width: '8em', height: '3em', fontFamily: 'DejaVu Sans Mono, monospace', fontSize: '16px' }}>Clear</button>
