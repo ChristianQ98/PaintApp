@@ -96,16 +96,19 @@ function App() {
       id = 'canvas'
         onMouseDown = { startDrawing }
         onTouchStart = { startDrawing }
+        onPointerDown = { startDrawing }
         onMouseMove = { draw }
         onTouchMove = { draw }
+        onPointerMove = { draw }
         onMouseUp = { stopDrawing }
         onMouseOut = { stopDrawing }
+        onPointerUp = { stopDrawing }
         onTouchEnd = { stopDrawing }
         ref = { canvasRef }
         style = {{ border: '3px solid black', width: '20px', height: '20px', textAlign: 'center', paddingLeft: 0, paddingRight: 0, marginTop: '2%', marginLeft: 'auto', marginRight: 'auto', display: 'block', backgroundColor: 'white', cursor: 'crosshair' }}
       />
 
-      <div className="paint-tools" style = {{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly', width: '50%', margin: 'auto', padding: '5px', marginTop: '1%' }}>
+      <div className="tools" style = {{ width: '50%', margin: 'auto', padding: '5px', marginTop: '1%' }}>
         <div>
           <Paint changeColor = { changeColor } drawColor = { drawColor } handlePenWidth = { handlePenWidth }/>
         </div>

@@ -14,7 +14,15 @@
     border-radius: 50%;
     border: 1px solid black;
     align-self: center;
-    margin: 0 10px;
+}
+
+.eraser {
+    height: 45px;
+    width: 45px;
+}
+
+.color-field, .color-picker {
+    margin: 0 20px;
 }
 
 .color-picker {
@@ -23,6 +31,7 @@
     height: 50px;
     border: 0;
     box-shadow: none !important;
+    padding: 0.6%;
 }
 
 .pen-width {
@@ -40,6 +49,9 @@
 .paint-tools {
     text-align: center;
     width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
 }
 
 #erase {
