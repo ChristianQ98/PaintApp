@@ -40,8 +40,8 @@ const Paint = (props) => {
                     <img onClick={ () => selectColor('white') } id="erase" className="color-field eraser" src="https://img.icons8.com/color/60/000000/pencil-eraser.png" alt="eraser" style={{ border: localStorage.getItem('penColor') === 'white' ? '3px solid black' : 'None', padding: '0.3%' }}/>
                     {/* Red color, changes pen color to red if clicked on, and also  */}
                 </div>
-                <div>
-                    <input onInput={ () => handlePenWidth() } id="pen-width" type="range" min="1" max="50" defaultValue={ handlePenWidth } class="pen-width"></input>
+                <div style={{  }}>
+                    <input style={{ maxWidth: '200px' }} onInput={ () => handlePenWidth() } id="pen-width" type="range" min="1" max="50" defaultValue={ handlePenWidth } class="pen-width"></input>
                 </div>
             </div>
         </>
